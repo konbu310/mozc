@@ -53,14 +53,14 @@
 #include "base/config_file_stream.h"
 #include "base/logging.h"
 #include "base/run_level.h"
+#include "client/client.h"
 #include "config/config_handler.h"
 #include "config/stats_config_util.h"
-#include "protocol/config.pb.h"
-#include "session/internal/keymap.h"
-#include "client/client.h"
 #include "gui/base/util.h"
 #include "gui/config_dialog/keymap_editor.h"
 #include "gui/config_dialog/roman_table_editor.h"
+#include "protocol/config.pb.h"
+#include "session/internal/keymap.h"
 
 #ifdef __APPLE__
 #include "base/mac/mac_util.h"
@@ -563,6 +563,8 @@ void ConfigDialog::ConvertFromProto(const config::Config &config) {
   SET_COMBOBOX(verboseLevelComboBox, int, verbose_level);
   SET_CHECKBOX(checkDefaultCheckBox, check_default);
   SET_COMBOBOX(yenSignComboBox, YenSignCharacter, yen_sign_character);
+  timeoutEdit->setText(
+      QString::number(config.composing_timeout_threshold_msec()));
 
   characterFormEditor->Load(config);
 
@@ -656,6 +658,8 @@ void ConfigDialog::ConvertToProto(config::Config *config) const {
   config->set_verbose_level(verboseLevelComboBox->currentIndex());
   GET_CHECKBOX(checkDefaultCheckBox, check_default);
   GET_COMBOBOX(yenSignComboBox, YenSignCharacter, yen_sign_character);
+
+  config->set_composing_timeout_threshold_msec(timeoutEdit->text().toInt());
 
   characterFormEditor->Save(config);
 }
